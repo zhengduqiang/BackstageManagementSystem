@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:c="">
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>审核商品</title>
+    <meta name="description" content="这是一个 index 页面">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="stylesheet" href="assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="assets/css/admin.css"/>
+    <link rel="icon" type="image/png" href="assets/i/favicon.png"/>
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png"/>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/app.js"></script>
+    <style>
+        td {
+            text-align: center
+        }
+
+        th {
+            text-align: center
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            /*按id异步查询商品信息*/
+            $(".xg").click(function () {
+                var id2 = $(this).attr("item-id");
+                $.ajax({
+                    type: "GET",//请求类型
+                    url: "findGoodsInfoId",//请求的url
+                    data: {id: id2},//请求参数
+                    dataType: "json",//ajax接口（请求url）返回的数据类型·
+                    success: function (date) {//data：返回数据（json对象）
+                        $("#doc-ta-9").val(date.name);//date返回对象，然后使用date点出对象中的属性，然后赋值给对应的id
+                        $("#doc-ipt-email-2").val(date.userinfo.userName);
+                        $("#doc-ta-0").val(date.goodstype.name);
+                        $("#doc-ta-6").val(date.tradingValue + '/' + date.truePrice);//把date返回的数据赋值给对应的文本框显示出值来。
+                        $("#doc-ta-2").val(date.remark);
+                        $("#modify").val(date.modify);
+                        $("#id").val(date.id);
+                        if (date.image != null) {
+                            $(".image").attr("src", date.image);
+                            $(".image").show();
+                        } else if (date.image == null) {
+                            $(".image").hide();
+                        }
+                        if (date.image1 != null) {
+                            $(".image1").attr("src", date.image1);
+                            $(".image1").show();
+                        } else if (date.image1 == null) {
+                            $(".image1").hide();
+                        }
+                        if (date.image2 != null) {
+                            $(".image2").attr("src", date.image2);
+                            $(".image2").show();
+                        } else if (date.image2 == null) {
+                            $(".image2").hide();
+                        }
+                        if (date.image3 != null) {
+                            $(".image3").attr("src", date.image3);
+                            $(".image3").show();
+                        } else if (date.image3 == null) {
+                            $(".image3").hide();
+                        }
+                    },
+                    error: function (date) {//当访问时候，404，500 等非200的错误状态码
+                        alert("查看商品详情失败！！");
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<!--[if lte IE 9]><p class="browsehappy">升级你的浏览器吧！ <a href="http://se.360.cn/" target="_blank">升级浏览器</a>以获得更好的体验！</p>
+<![endif]-->
+<header class="am-topbar admin-header">
+    <div class="am-topbar-brand"><img src="assets/i/logo.png"></div>
+</header>
+<div class="am-cf admin-main">
+    <div class="nav-navicon admin-main admin-sidebar">
+        <!--获取session的值-->
+        <div th:text="'欢迎管理员'+${session.managerList.getUsername()}+'登录'" class="sideMenu am-icon-dashboard"
+             style="color:#aeb2b7; margin: 10px 0 0 0;">
+            <!--<p th:text="${managerinfo.username}"></p>--></div>
+        <div class="sideMenu">
+            <h3 class="am-icon-flag"><em></em> <a href="#">商品管理</a></h3>
+            <ul>
+                <li><a th:href="@{/findGoods}">商品列表</a></li>
+                <li><a th:href="@{/findGoodsInfoAll}">审核商品</a></li>
+            </ul>
+            yi
+            <h3 class="am-icon-cart-plus"><em></em> <a href="#"> 订单管理</a></h3>
+            <ul>
+                <li><a th:href="@{/goToIndentList}">订单列表</a></li>
+            </ul>
+            <h3 class="am-icon-users"><em></em> <a href="#">用户管理</a></h3>
+            <ul>
+                <li><a th:href="@{/UserList}">用户列表</a></li>
+            </ul>
+            <h3 class="am-icon-volume-up"><em></em><a href="#">用户评论信息管理</a></h3>
+            <ul>
+                <li><a th:href="@{/gotoPurchaseInformation}">求购信息</a></li>
+                <li><a th:href="@{/findGoodsMessageList}">用户评论列表</a></li>
+            </ul>
+            <h3 class="am-icon-gears"><em></em> <a href="#">系统设置</a></h3>
+            <ul>
+                <li><a th:href="@{/findManagerinfoId(id=${session.managerList.getId()})}">个人信息</a></li>
+                <li><a th:href="@{/XGMM}">修改密码</a></li>
+            </ul>
+        </div>
+        <!-- sideMenu End -->
+
+        <script type="text/javascript">
+            jQuery(".sideMenu").slide({
+                titCell: "h3", //鼠标触发对象
+                targetCell: "ul", //与titCell一一对应，第n个titCell控制第n个targetCell的显示隐藏
+                effect: "slideDown", //targetCell下拉效果
+                delayTime: 300, //效果时间
+                triggerTime: 150, //鼠标延迟触发时间（默认150）
+                defaultPlay: true,//默认是否执行效果（默认true）
+                returnDefault: true //鼠标从.sideMen移走后返回默认状态（默认false）
+            });
+        </script>
+    </div>
+    <div class=" admin-content">
+        <div class="daohang">
+            <ul>
+                <li>
+                    <a th:href="@{/SY}" type="button" class="am-btn am-btn-default am-radius am-btn-xs">
+                        首页
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="am-popup am-popup-inner" id="my-popup" style="width: 900px">
+            <div class="am-popup-hd">
+                <h4 class="am-popup-title">查看审核发布商品</h4>
+        <span data-am-modal-close
+              class="am-close">&times;</span></div>
+            <div class="am-popup-bd">
+                <form class="am-form tjlanmu" onsubmit="return false">
+                    <div class="am-form-group">
+                        <div class="zuo">发布用户：</div>
+                        <div class="you">
+                            <input type="text" class="am-input-sm" readonly id="doc-ipt-email-2"/>
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <div class="you">
+                            <input type="hidden" name="id" id="id"/>
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <div class="zuo">商品名称：</div>
+                        <div class="you">
+                            <input class="am-input-sm" type="text" width="100px" id="doc-ta-9" readonly/>
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <div class="zuo">商品类型：</div>
+                        <div class="you">
+                            <input class="am-input-sm" type="text" width="120" id="doc-ta-0" readonly/>
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <div class="zuo">出售/真实价格</div>
+                        <div class="you">
+                            <input class="am-input-sm" type="text" width="100px" id="doc-ta-6" readonly/>
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品详细信息：</div>
+                        <div class="you">
+                            <textarea class="" rows="2" id="doc-ta-2" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">发布时间</div>
+                        <div class="you">
+                            <input type="text" style="height: 35px;" id="modify" readonly/>
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品图片：</div>
+                        <div class="you" style="height: 45px;">
+                            <img class="image pimg" th:width="50px" th:height="50px" border="1"/>
+                            <img class="image1 pimg" th:width="50px" th:height="50px" border="1"/>
+                            <img class="image2 pimg" th:width="50px" th:height="50px" border="1"/>
+                            <img class="image3 pimg" th:width="50px" th:height="50px" border="1"/>
+                        </div>
+                        <div class="outerdiv"
+                             style="position:fixed;top:0;left:0;background:rgba(0,0,0,0.7);z-index:2;width:100%;height:100%;display:none;">
+                            <div class="innerdiv" style="margin-top: 200px;margin-left: 250px">
+                                <img class="bigimg" style="" src=""/>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">状态：</div>
+                        <div class="you">
+                            <input type="text" style="height: 32px;" id="display" value="待审核" readonly/>
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="you">
+                            <!--估计条件修改商品状态-->
+                            <a th:href="@{/updateDisplay(id=${id},display=0)}" class="am-btn am-btn-success am-radius">审核通过</a>
+                            <a th:href="@{/updateDisplay(id=${id},display=3)}" class="am-btn am-btn-success am-radius"
+                               style="background: red;">
+                                审核不通过
+                            </a>
+                            <br><br>
+                            <!--  <button id="canNot_btn" type="submit" class="am-btn am-btn-success am-radius" style="background: #4a090d;">
+                                  审核不通过并禁止用户发布商品
+                              </button>-->
+                        </div>
+                    </div>
+
+                    <!--审核不通过弹出层 begin-->
+                    <!-- <style type="text/css">
+                         #canNot{
+                             display: none;
+                         }
+
+                         #canNot, #canNot > div {
+                             position: absolute;
+                             top: 0;
+                             left: 0;
+                             width: 100%;
+                             height: 100%;
+                             border-radius: 10px;;
+                             background-color: rgba(0, 0, 0, 0.1);
+                         }
+
+                         #canNot > div {
+                             z-index: 99;
+                         }
+
+                         #canNot > p {
+                             border-radius: 10px;
+                             background-color: #fff;
+                             margin: 0 auto;
+                             width: 90%;
+                             padding: 3% 0;
+                             transform: translateY(130%);
+                             overflow: hidden;
+                             position: relative;
+                             z-index: 100;
+                         }
+
+                         #canNot > p > * {
+                             width: 80%;
+                             display: block !important;
+                             margin: 15px auto;
+                         }
+
+                         #canNot > p > span {
+                             font-size: 16px;
+                         }
+
+                         #canNot > p > select {
+                             border: 1px solid #c0c0c0;
+                         }
+
+                         #canNot > p > button {
+                             border: 0;
+                             width: 22% !important;
+                             position: relative;
+                             right: -18%;
+                             padding: 5px 0;
+                             font-size: 18px;
+                             background-color: #c85e0b;
+                             color: #fff;
+                         }
+                     </style>
+                     <script type="text/javascript">
+                         window.onload = function () {
+                             $(" #canNot > div").click(function () {
+                                 $(" #canNot").slideUp(500);
+                             });
+
+                             $(" #canNot_btn").click(function () {
+                                 $(" #canNot").slideDown(200);
+                             });
+                         };
+                     </script>
+                     <div id="canNot">
+                         <p>
+                             <span>禁止用户发布商品时长</span>
+                             <select>
+                                 <option>一天</option>
+                                 <option selected="selected">三天</option>
+                                 <option>七天</option>
+                                 <option>一个月</option>
+                                 <option>三个月</option>
+                                 <option>六个月</option>
+                                 <option>一年</option>
+                                 <option>永久</option>
+                             </select>
+                             <button typt="submit">提交</button>
+                         </p>
+                         <div></div>
+                     </div>
+                     &lt;!&ndash;审核不通过弹出层 end&ndash;&gt;
+ -->
+                </form>
+            </div>
+        </div>
+        <div class="admin-biaogelist">
+            <div class="listbiaoti am-cf">
+                <ul class="am-icon-flag on" style="color: red">
+                    审核商品
+                </ul>
+                <dl class="am-icon-home" style="float: right;">
+                    当前位置： <a th:href="@{/SY}">首页 </a> > <a th:href="@{/findGoodsInfoAll}">审核商品</a><!--两个超链接跳转页面-->
+                </dl>
+                <dl>
+                </dl>
+                <!--data-am-modal="{target: '#my-popup'}" 弹出层 ID  弹出层 190行 开始  271行结束-->
+            </div>
+            <form method="post" th:action="@{/findGoodsInfo}">
+                <div class="am-btn-toolbars am-btn-toolbar am-kg am-cf" id="ssk">
+                    <ul>
+                        <!-- <li style="color: #6598a0;font-size: 14px;margin-top: 4px;">商品状态：</li>-->
+                        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+
+                        <!-- <li style="color: #6598a0;font-size: 14px;margin-top: 4px;">商品类型：</li>-->
+                        <li>
+                            <div class="am-btn-group am-btn-group-xs">
+                                <select data-am-selected="{btnWidth: 120, btnSize: 'sm', btnStyle: 'default'}"
+                                        name="type" th:value="${type}">
+                                    <option value="0">选择商品类型</option>
+                                    <option value="1" th:selected="${type==1}">闲置数码</option><!--th:selected数据回显操作-->
+                                    <option value="2" th:selected="${type==2}">虚拟物品</option>
+                                    <option value="3" th:selected="${type==3}">电器日用</option>
+                                    <option value="4" th:selected="${type==4}">图书教材</option>
+                                    <option value="5" th:selected="${type==5}">美妆衣物</option>
+                                    <option value="6" th:selected="${type==6}">运动棋牌</option>
+                                </select>
+                            </div>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                        </li>
+
+                        <li style="color: #23282a;font-size: 13px;margin-top: 4px;">商品名称：</li>
+                        <li>
+                            <input type="text" name="Name"
+                                   style="width:150px;height: 32px;margin-top: 0px;" th:value="${Name}"
+                                   class="am-form-field am-input-sm am-input-xm" placeholder="商品名称"/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </li>
+                        <li>
+                            <input type="submit" value="搜索" style="width:60px;height: 30px;margin-top: 1px;"
+                                   class="am-btn am-radius am-btn-xs am-btn-success"/>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+            <form class="am-form am-g">
+                <table width="100%" class="am-table am-table-bordered am-table-radius am-table-striped am-table-hover">
+                    <thead>
+                    <tr class="am-success">
+                        <th class="table-check"><input type="checkbox"/></th>
+                        <th class="table-id am-text-center">ID</th>
+                        <th class="">发布用户</th>
+                        <th class="table-type">商品名称</th>
+                        <th class="table-type">商品类型</th>
+                        <th class="table-author am-hide-sm-only">真实价格</th>
+                        <th class="table-title">出售价格</th>
+                        <th>商品成色</th>
+                        <th>发布时间</th>
+                        <th class="table-title">状态</th>
+                        <th width="125px" class="table-set">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="goodsinfo : ${goodsInfoAll}">
+                        <td><input type="hidden" th:value="${goodsinfo.id}"/></td>
+                        <td class="am-text-center" th:text="${goodsinfo.id}">1</td>
+                        <td th:text="${goodsinfo.userinfo.userName}">小杜</td>
+                        <td th:text="${goodsinfo.name}">牙刷</td>
+                        <td th:text="${goodsinfo.goodstype.name}">电器日常</td>
+                        <td th:text="${goodsinfo.tradingValue}" class="am-hide-sm-only"></td>
+                        <td th:text="${goodsinfo.truePrice}">50</td>
+                        <td th:text="${goodsinfo.level}+'成新'" class="spcs"></td>
+                        <!--
+                        判断数据库的数字是否正确正确显示数字
+                        <td th:if="${goodsinfo.level==5}">5成新</td>
+                        <td th:if="${goodsinfo.level==9}">9成新</td>
+                        <td th:if="${goodsinfo.level==10}">10成新</td>-->
+                        <td th:text="${#dates.format(goodsinfo.modify,'yyyy-MM-dd')}">2018-08-08</td>
+                        <td style="color: #DD1619" class="shsp">待审核</td>
+                        <td>
+                            <a class="am-btn am-btn-default am-btn-xs am-text-secondary am-round query xg"
+                               th:item-id="${goodsinfo.id}"
+                               data-am-modal="{target: '#my-popup'}"
+                            ><span class="am-icon-pencil-square-o"></span></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="xian" style="float: right">
+                    <div class="page">
+                        共<span th:text="${pageInfo.total}"></span>条记录&nbsp;每页<span>2</span>条&nbsp;现在<span
+                            th:text="${pageInfo.pageNum}" id="pageNum"></span>/<span
+                            th:text="${pageInfo.pages}" id="totalPageCount"></span>页
+                        <a th:href="@{/findGoodsInfo(Name=${Name},type=${type})}">首页</a>
+                        <a th:href="@{/findGoodsInfo(pageNum=${pageInfo.pageNum-1},Name=${Name},type=${type})}">上一页</a>
+                        <a th:href="@{/findGoodsInfo(pageNum=${pageInfo.pageNum+1},Name=${Name},type=${type})}">下一页</a>
+                        <a th:href="@{/findGoodsInfo(pageNum=${pageInfo.total},Name=${Name},type=${type})}">尾页</a>
+                    </div>
+                    <style type="text/css">
+                        .xian .page a {
+                            background-color: #d9d9d9;
+                            padding: 4px 12px;
+                            border-radius: 2px;
+                        }
+
+                        .page a:hover {
+                            background-color: #c7c7c7;
+                        }
+                    </style>
+                </div>
+                <hr/>
+            </form>
+            <div class="foods" style="margin-top: 372px;">
+                <ul>
+                    版权所有@2019 北大青鸟鸿鹄狮鹫
+                </ul>
+                <dl>
+                    <a href="" title="返回头部" class="am-icon-btn am-icon-arrow-up"></a>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--[if lt IE 9]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/polyfill/rem.min.js"></script>
+<script src="assets/js/polyfill/respond.min.js"></script>
+<script src="assets/js/amazeui.legacy.js"></script>
+<![endif]-->
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/amazeui.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var pageNum = $("#pageNum").html();
+        var totalPageCount = $("#totalPageCount").html();
+        if (pageNum <= 1) {
+            $("#index").attr("style", "display: none");
+            $("#top").attr("style", "display: none");
+            $("#bottom").attr("style", "display: block");
+            $("#last").attr("style", "display: block");
+        } else if (pageNum >= totalPageCount) {
+            $("#index").attr("style", "display: block");
+            $("#top").attr("style", "display: block");
+            $("#bottom").attr("style", "display: none");
+            $("#last").attr("style", "display: none");
+        }
+    });
+</script>
+<script>
+    $(function () {
+        $(".pimg").click(function () {
+            var _this = $(this);//将当前的pimg元素作为_this传入函数
+            imgShow(".outerdiv", ".innerdiv", ".bigimg", _this);
+        });
+
+        $("body").click(function () {
+            $(".outerdiv").hide();
+        });
+    });
+
+    function imgShow(outerdiv, innerdiv, bigimg, _this) {
+        var src = _this.attr("src");//获取当前点击的pimg元素中的src属性
+        $(bigimg).attr("src", src);//设置#bigimg元素的src属性
+
+        /*获取当前点击图片的真实大小，并显示弹出层及大图*/
+        $("<img/>").attr("src", src).load(function () {
+            var windowW = $(window).width();//获取当前窗口宽度
+            var windowH = $(window).height();//获取当前窗口高度
+            var realWidth = this.width;//获取图片真实宽度
+            var realHeight = this.height;//获取图片真实高度
+            var imgWidth, imgHeight;
+            var scale = 0.5;//缩放尺寸，当图片真实宽度和高度大于窗口宽度和高度时进行缩放
+
+            if (realHeight > windowH * scale) {//判断图片高度
+                imgHeight = windowH * scale;//如大于窗口高度，图片高度进行缩放
+                imgWidth = imgHeight / realHeight * realWidth;//等比例缩放宽度
+                if (imgWidth > windowW * scale) {//如宽度扔大于窗口宽度
+                    imgWidth = windowW * scale;//再对宽度进行缩放
+                }
+            } else if (realWidth > windowW * scale) {//如图片高度合适，判断图片宽度
+                imgWidth = windowW * scale;//如大于窗口宽度，图片宽度进行缩放
+                imgHeight = imgWidth / realWidth * realHeight;//等比例缩放高度
+            } else {//如果图片真实高度和宽度都符合要求，高宽不变
+                imgWidth = realWidth;
+                imgHeight = realHeight;
+            }
+            $(bigimg).css("width", imgWidth);//以最终的宽度对图片缩放
+
+            var w = (windowW - imgWidth) / 2;//计算图片与窗口左边距
+            var h = (windowH - imgHeight) / 2;//计算图片与窗口上边距
+            $(innerdiv).css({"top": h, "left": w});//设置#innerdiv的top和left属性
+            $(outerdiv).fadeIn("fast");//淡入显示#outerdiv及
+        });
+
+        $(outerdiv).click(function () {//再次点击淡出消失弹出层
+            $(this).fadeOut("fast");
+        });
+    }
+</script>
+<!--<![endif]-->
+
+</body>
+</html>

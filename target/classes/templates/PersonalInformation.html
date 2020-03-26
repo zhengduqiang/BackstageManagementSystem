@@ -1,0 +1,165 @@
+<!doctype html>
+<html class="no-js">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>个人信息</title>
+    <meta name="description" content="这是一个 index 页面">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="stylesheet" href="assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/app.js"></script>
+</head>
+<!--[if lte IE 9]><p class="browsehappy">升级你的浏览器吧！ <a href="http://se.360.cn/" target="_blank">升级浏览器</a>以获得更好的体验！</p>
+<![endif]-->
+</head>
+
+<body>
+<header class="am-topbar admin-header">
+    <div class="am-topbar-brand"><img src="assets/i/logo.png"></div>
+</header>
+
+<div class="am-cf admin-main">
+
+    <div class="nav-navicon admin-main admin-sidebar">
+        <!--获取session的值-->
+        <div th:text="'欢迎管理员'+${session.managerList.getUsername()}+'登录'" class="sideMenu am-icon-dashboard"
+             style="color:#aeb2b7; margin: 10px 0 0 0;">
+            <!--<p th:text="${managerinfo.username}"></p>--></div>
+        <div class="sideMenu">
+            <h3 class="am-icon-flag"><em></em> <a href="#">商品管理</a></h3>
+            <ul>
+                <li><a th:href="@{/findGoods}">商品列表</a></li>
+                <li><a th:href="@{/findGoodsInfoAll}">审核商品</a></li>
+            </ul>
+            <h3 class="am-icon-cart-plus"><em></em> <a href="#"> 订单管理</a></h3>
+            <ul>
+                <li><a th:href="@{/goToIndentList}">订单列表</a></li>
+            </ul>
+            <h3 class="am-icon-users"><em></em> <a href="#">用户管理</a></h3>
+            <ul>
+                <li><a th:href="@{/UserList}">用户列表</a></li>
+            </ul>
+            <h3 class="am-icon-volume-up"><em></em><a href="#">用户评论信息管理</a></h3>
+            <ul>
+                <li><a th:href="@{/gotoPurchaseInformation}">求购信息</a></li>
+                <li><a th:href="@{/findGoodsMessageList}">用户评论列表</a></li>
+            </ul>
+            <h3 class="am-icon-gears"><em></em> <a href="#">系统设置</a></h3>
+            <ul>
+                <li><a th:href="@{/findManagerinfoId(id=${session.managerList.getId()})}">个人信息</a></li>
+                <li><a th:href="@{/XGMM}">修改密码</a></li>
+            </ul>
+        </div>
+        <!-- sideMenu End -->
+
+        <script type="text/javascript">
+            jQuery(".sideMenu").slide({
+                titCell: "h3", //鼠标触发对象
+                targetCell: "ul", //与titCell一一对应，第n个titCell控制第n个targetCell的显示隐藏
+                effect: "slideDown", //targetCell下拉效果
+                delayTime: 300, //效果时间
+                triggerTime: 150, //鼠标延迟触发时间（默认150）
+                defaultPlay: true,//默认是否执行效果（默认true）
+                returnDefault: true //鼠标从.sideMen移走后返回默认状态（默认false）
+            });
+        </script>
+    </div>
+    <div class="daohang">
+        <ul>
+            <li>
+                <a type="button" th:href="@{/SY}" class="am-btn am-btn-default am-radius am-btn-xs"> 首页</a>
+            </li>
+        </ul>
+    </div>
+
+
+    <div class="admin-biaogelist">
+        <div class="listbiaoti am-cf">
+            <ul class="am-icon-flag on" style="color: red;"> 个人信息</ul>
+            <dl class="am-icon-home" style="float: right;">当前位置： <a th:href="@{/SY}">首页</a> > <a
+                    th:href="@{/findManagerinfoId(id=${session.managerList.getId()})}">个人信息</a></dl>
+        </div>
+        <div class="am-tabs am-margin" data-am-tabs>
+            <ul class="am-tabs-nav am-nav am-nav-tabs">
+                <li class="am-active"><a href="#tab1">个人信息</a></li>
+            </ul>
+            <div class="am-tabs-bd">
+                <div class="am-tab-panel am-fade am-in am-active" id="tab1">
+                    <div class="am-g am-margin-top">
+
+                        <div class="am-u-sm-8 am-u-md-10" th:each="good:${managerinfo}">
+                            <form class="am-form">
+                                <div class="am-g am-margin-top-sm">
+                                    <div class="am-u-sm-4 am-u-md-2 am-text-right">
+                                        用户名：
+                                    </div>
+                                    <div class="am-u-sm-8 am-u-md-4 am-u-end">
+                                        <input type="text" class="am-input-sm" th:value="${good.username}"
+                                               readonly id="username">
+                                    </div>
+                                </div>
+                                <div class="am-g am-margin-top-sm">
+                                    <div class="am-u-sm-4 am-u-md-2 am-text-right">
+                                        手机号码
+                                    </div>
+                                    <div class="am-u-sm-8 am-u-md-4 am-u-end">
+                                        <input type="text" class="am-input-sm" th:value="${good.phone}" readonly>
+                                    </div>
+                                </div>
+                                <div class="am-g am-margin-top-sm">
+                                    <div class="am-u-sm-4 am-u-md-2 am-text-right">
+                                        角色
+                                    </div>
+                                    <div class="am-u-sm-8 am-u-md-4 am-u-end">
+                                        <input type="text" class="am-input-sm" value="管理员" readonly>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="am-tab-panel am-fade" id="tab3">
+                </div>
+            </div>
+        </div>
+        <div class="am-margin">
+
+        </div>
+
+        <div class="foods">
+            <ul>
+                版权所有@2019 北大青鸟鸿鹄狮鹫
+            </ul>
+            <dl>
+                <a href="" title="返回头部" class="am-icon-btn am-icon-arrow-up"></a>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<!--[if lt IE 9]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/polyfill/rem.min.js"></script>
+<script src="assets/js/polyfill/respond.min.js"></script>
+<script src="assets/js/amazeui.legacy.js"></script>
+<![endif]-->
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+
+
+</body>
+</html>

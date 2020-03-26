@@ -1,0 +1,425 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>订单列表</title>
+    <meta name="description" content="这是一个 index 页面">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="stylesheet" href="assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/app.js"></script>
+    <style>
+        td {
+            text-align: center
+        }
+
+        th {
+            text-align: center
+        }
+    </style>
+</head>
+<body>
+<!--[if lte IE 9]><p class="browsehappy">升级你的浏览器吧！ <a href="http://se.360.cn/" target="_blank">升级浏览器</a>以获得更好的体验！</p>
+<![endif]-->
+<header class="am-topbar admin-header">
+    <div class="am-topbar-brand"><img src="assets/i/logo.png"></div>
+</header>
+<div class="am-cf admin-main">
+    <div class="nav-navicon admin-main admin-sidebar">
+        <!--获取session的值-->
+        <div th:text="'欢迎管理员'+${session.managerList.getUsername()}+'登录'" class="sideMenu am-icon-dashboard"
+             style="color:#aeb2b7; margin: 10px 0 0 0;">
+            <!--<p th:text="${managerinfo.username}"></p>--></div>
+        <div class="sideMenu">
+            <h3 class="am-icon-flag"><em></em> <a href="#">商品管理</a></h3>
+            <ul>
+                <li><a th:href="@{/findGoods}">商品列表</a></li>
+                <li><a th:href="@{/findGoodsInfoAll}">审核商品</a></li>
+            </ul>
+            <h3 class="am-icon-cart-plus"><em></em> <a href="#"> 订单管理</a></h3>
+            <ul>
+                <li><a th:href="@{/goToIndentList}">订单列表</a></li>
+            </ul>
+            <h3 class="am-icon-users"><em></em> <a href="#">用户管理</a></h3>
+            <ul>
+                <li><a th:href="@{/UserList}">用户列表</a></li>
+            </ul>
+            <h3 class="am-icon-volume-up"><em></em><a href="#">用户评论信息管理</a></h3>
+            <ul>
+                <li><a th:href="@{/gotoPurchaseInformation}">求购信息</a></li>
+                <li><a th:href="@{/findGoodsMessageList}">用户评论列表</a></li>
+            </ul>
+            <h3 class="am-icon-gears"><em></em> <a href="#">系统设置</a></h3>
+            <ul>
+                <li><a th:href="@{/findManagerinfoId(id=${session.managerList.getId()})}">个人信息</a></li>
+                <li><a th:href="@{/XGMM}">修改密码</a></li>
+            </ul>
+        </div>
+        <!-- sideMenu End -->
+
+        <script type="text/javascript">
+            jQuery(".sideMenu").slide({
+                titCell: "h3", //鼠标触发对象
+                targetCell: "ul", //与titCell一一对应，第n个titCell控制第n个targetCell的显示隐藏
+                effect: "slideDown", //targetCell下拉效果
+                delayTime: 300, //效果时间
+                triggerTime: 150, //鼠标延迟触发时间（默认150）
+                defaultPlay: true,//默认是否执行效果（默认true）
+                returnDefault: true //鼠标从.sideMen移走后返回默认状态（默认false）
+            });
+        </script>
+    </div>
+    <div class=" admin-content">
+        <div class="daohang">
+            <ul>
+                <li>
+                    <a th:href="@{/SY}" type="button" class="am-btn am-btn-default am-radius am-btn-xs">
+                        首页
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="am-popup am-popup-inner" id="my-popups">
+            <div class="am-popup-hd">
+                <h4 class="am-popup-title">修改订单状态</h4>
+                <span data-am-modal-close class="am-close">&times;</span></div>
+            <div class="am-popup-bd">
+                <form class="am-form tjlanmu" action="UpdateUserinfo" method="post">
+                    <!--<input type="hidden" th:value="${user.id}" name="id">-->
+                    <div class="am-form-group">
+                        <div class="zuo">订单编号:</div>
+                        <div class="you">
+                            <input type="text" name="goodid" id="good-id" class="am-input-sm userName">
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="am-form-group">
+                        <div class="zuo"></div>
+                        <div class="you">
+                            <!--<input type="password" class="am-input-sm" id="doc-ipt-pwd-1" placeholder="请输入关键词">-->
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">产品名称</div>
+                        <div class="you">
+                            <input class="am-input-sm phone" id="good-name" type="text"/>
+                        </div>
+                    </div>
+                    <!--<div class="am-form-group am-cf">-->
+                    <!--<div class="zuo">用户头像:</div>-->
+                    <!--<div class="you" style="height: 45px;">-->
+                    <!--<input type="file" id="doc-ipt-file-1">-->
+                    <!--<p class="am-form-help">请选择要上传的文件...</p>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <br/>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">购买人:</div>
+                        <div class="you">
+                            <!--<textarea class="" rows="2" id="doc-ta-3"></textarea>-->
+                            <input type="text" id="good-buyName" class="am-input-sm class">
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">出售人:</div>
+                        <div class="you">
+                            <!--<textarea class="" rows="2" id="doc-ta-3"></textarea>-->
+                            <input type="text" id="good-saleName" class="am-input-sm dormitory">
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">状态：</div>
+                        <div class="you" style="margin-top: 3px;">
+                            <select name="status" id="good-sale">
+                                <option id="option1" value="1">待发货</option>
+                                <option id="option2" value="2">待收货</option>
+                                <option id="option3" value="3">已签收</option>
+                            </select>
+                            <!--<input type="text" name="status" class="am-input-sm status">-->
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="am-form-group am-cf">
+                        <div class="you">
+                            <p>
+                                <button type="button" id="updateState" class="am-btn am-btn-success am-radius">提交
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="admin-biaogelist">
+            <div class="listbiaoti am-cf">
+                <ul class="am-icon-flag on" style="color: red;">
+                    订单列表
+                </ul>
+                <dl class="am-icon-home" style="float: right;">
+                    当前位置： <a th:href="@{/SY}">首页 </a>> <a th:href="@{/goToIndentList}">订单列表</a>
+                </dl>
+            </div>
+            <form id="quanbu" th:action="@{/goToIndentList}" method="post">
+                <div class="am-btn-toolbars am-btn-toolbar am-kg am-cf" id="ssk">
+                    <ul>
+                        <!--<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+                        <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+                        <!--</li>-->
+                        <li style="color: #23282a;font-size: 13px;margin-top: 4px;">订单编号：</li>
+                        <li>
+                            <input name="id" th:value="${bc.id}" type="text"
+                                   style="width:150px;height: 32px;margin-top: 0px;"
+                                   class="am-form-field am-input-sm am-input-xm" placeholder=""/>
+                        </li>
+                        <li style="color: #23282a;font-size: 13px;margin-top: 4px;">订单名称：</li>
+                        <li>
+                            <input name="goodName" th:value="${bc.goodName}" type="text"
+                                   style="width:150px;height: 32px;margin-top: 0px;"
+                                   class="am-form-field am-input-sm am-input-xm" placeholder=""/>
+                        </li>
+                        <li style="color: #23282a;font-size: 13px;margin-top: 4px;">购买人：</li>
+                        <li>
+                            <input name="buyName" th:value="${bc.buyName}" type="text"
+                                   style="width:85px;height: 32px;margin-top: 0px;"
+                                   class="am-form-field am-input-sm am-input-xm" placeholder=""/>
+                        </li>
+                        <li style="color: #23282a;font-size: 13px;margin-top: 4px;">出售人：</li>
+                        <li>
+                            <input name="saleName" th:value="${bc.saleName}" type="text"
+                                   style="width:85px;height: 32px;margin-top: 0px;"
+                                   class="am-form-field am-input-sm am-input-xm" placeholder=""/>
+                        </li>
+                        <div class="am-btn-group am-btn-group-xs">
+                            <select data-am-selected="{btnWidth: 110, btnSize: 'sm', btnStyle: 'default'}"
+                                    name="state" th:value="${bc.state}">
+                                <option value="-1">订单状态</option>
+                                <option th:selected="${bc.state==1}" value="1">待发货</option>
+                                <option th:selected="${bc.state==2}" value="2">待收货</option>
+                                <option th:selected="${bc.state==3}" value="3">已签收</option>
+                            </select>
+                        </div>
+                        </li>
+                        <li>&nbsp;&nbsp;&nbsp;</li>
+                        <li>
+                            <div class="am-btn-group am-btn-group-xs">
+                                <select data-am-selected="{btnWidth: 110, btnSize: 'sm', btnStyle: 'default'}"
+                                        name="goodType" th:value="${bc.goodType}">
+                                    <option value="-1">商品类型</option>
+                                    <option th:selected="${bc.goodType==1}" value="1">闲置数码</option>
+                                    <option th:selected="${bc.goodType==2}" value="2">虚拟物品</option>
+                                    <option th:selected="${bc.goodType==3}" value="3">电器日用</option>
+                                    <option th:selected="${bc.goodType==4}" value="4">图书教材</option>
+                                    <option th:selected="${bc.goodType==5}" value="5">美妆衣物</option>
+                                    <option th:selected="${bc.goodType==6}" value="6">运动棋牌</option>
+                                </select>
+                            </div>
+                        </li>
+                        <li>
+                            <button type="submit" style="width:60px;height: 30px;margin-top: 1px;"
+                                    class="am-btn am-radius am-btn-xs am-btn-success"> 搜索
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+            <form class="am-form am-g">
+                <table width="100%" class="am-table am-table-bordered am-table-radius am-table-striped am-table-hover">
+                    <thead>
+                    <tr class="am-success">
+                        <th class="table-check"><input type="checkbox"/></th>
+                        <th class="table-id am-text-center" style="width: 10%">订单编号</th>
+                        <!--<th class="">订单编号</th>-->
+                        <th class="" style="width: 10%">产品名字</th>
+                        <th class="table-author am-hide-sm-only" style="width: 10%">产品类型</th>
+                        <th class="table-author am-hide-sm-only" style="width: 10%">总价</th>
+                        <th class="table-type" style="width: 10%">购买人</th>
+                        <th class="table-author am-hide-sm-only" style="width: 10%">出售人</th>
+                        <th class="table-title" style="width: 10%">下单时间</th>
+                        <th class="table-title" style="width: 10%">出售方式</th>
+                        <th class="table-title" style="width: 10%">订单状态</th>
+                        <th width="125px" class="table-set" style="width: 7.5%">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="goods : ${buiedgoodsCustoms}">
+                        <td><input type="checkbox"/></td>
+                        <td th:text="${goods.Id}"><a href="#">订单编号</a></td>
+                        <td th:text="${goods.goodName}">产品名字</td>
+                        <!--<td th:text="${goods.goodType}">产品类型</td>-->
+                        <td th:if="${goods.goodType==1}">闲置数码</td>
+                        <td th:if="${goods.goodType==2}">游戏代练</td>
+                        <td th:if="${goods.goodType==3}">电器日用</td>
+                        <td th:if="${goods.goodType==4}">图书教材</td>
+                        <td th:if="${goods.goodType==5}">美妆衣物</td>
+                        <td th:if="${goods.goodType==6}">运动棋牌</td>
+                        <td th:text="${goods.tradingValue}">总价</td>
+                        <td th:text="${goods.buyName}">购买/td>
+                        <td th:text="${goods.saleName}">出售人</td>
+                        <td th:text="${#dates.format(goods.Modify,'yyyy-MM-dd')}">下单时间</td>
+                        <!--<td th:text="${goods.transaction}">出售方式</td>-->
+                        <td th:if="${goods.transaction==0}">微信</td>
+                        <td th:if="${goods.transaction==1}">支付宝</td>
+                        <td th:if="${goods.transaction==2}">面交</td>
+                        <!--<td th:text="${goods.State}">状态</td>-->
+                        <td th:if="${goods.State==1}" style="color: blue;">待发货</td>
+                        <td th:if="${goods.State==2}" style="color: red;">待收货</td>
+                        <td th:if="${goods.State==3}" style="color: yellowgreen;">已签收</td>
+                        <td>
+                            <div class="am-btn-toolbar">
+                                <div class="am-btn-group am-btn-group-xs">
+                                    <a class="findById am-btn am-btn-default am-btn-xs am-text-secondary am-round"
+                                       data-am-modal="{target: '#my-popups'}" th:item-id="${goods.Id}"
+                                       title="修改订单状态"><span class="am-icon-pencil-square-o findById"></span></a>
+                                    <!-- 用按钮的时候 弹层 后缀需要加 问好 ？#的 时候才有效 真恶心 .html?# -->
+                                    <button class="am-btn am-btn-default am-btn-xs am-text-danger am-round deleteById"
+                                            th:item-id="${goods.Id}" title="删除">
+                                        <span class="am-icon-trash-o"></span></button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="xian" style="float: right">
+                    <div class="page">
+                        共<span th:text="${pageInfo.total}"></span>条记录&nbsp;每页<span>4</span>条&nbsp;现在<span
+                            th:text="${pageInfo.pageNum}" id="pageNum"></span>/<span
+                            th:text="${pageInfo.pages}" id="totalPageCount"></span>页
+                        <a th:href="@{/goToIndentList(bc=${bc},id=${bc.id},goodName=${bc.goodName},buyName=${bc.buyName},saleName=${bc.saleName},state=${bc.state},goodType=${bc.goodType})}">首页</a>
+                        <a th:href="@{/goToIndentList(pageNum=${pageInfo.pageNum-1},bc=${bc},id=${bc.id},goodName=${bc.goodName},buyName=${bc.buyName},saleName=${bc.saleName},state=${bc.state},goodType=${bc.goodType})}">上一页</a>
+                        <a th:href="@{/goToIndentList(pageNum=${pageInfo.pageNum+1},bc=${bc},id=${bc.id},goodName=${bc.goodName},buyName=${bc.buyName},saleName=${bc.saleName},state=${bc.state},goodType=${bc.goodType})}">下一页</a>
+                        <a th:href="@{/goToIndentList(pageNum=${pageInfo.total},bc=${bc},id=${bc.id},goodName=${bc.goodName},buyName=${bc.buyName},saleName=${bc.saleName},state=${bc.state},goodType=${bc.goodType})}">尾页</a>
+                    </div>
+                    <style type="text/css">
+                        .xian .page a {
+                            background-color: #d9d9d9;
+                            padding: 4px 12px;
+                            border-radius: 2px;
+                        }
+
+                        .page a:hover {
+                            background-color: #c7c7c7;
+                        }
+                    </style>
+                </div>
+                </ul>
+                <hr/>
+            </form>
+            <div class="foods" style="margin-top: 372px;">
+                <ul>
+                    版权所有@2019 北大青鸟鸿鹄狮鹫
+                </ul>
+                <dl>
+                    <a href="" title="返回头部" class="am-icon-btn am-icon-arrow-up"></a>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="sa"></div>
+<!--[if lt IE 9]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/polyfill/rem.min.js"></script>
+<script src="assets/js/polyfill/respond.min.js"></script>
+<script src="assets/js/amazeui.legacy.js"></script>
+<![endif]-->
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<script type="text/javascript">
+    <!--删除-->
+    $(".deleteById").click(function () {
+        var confirm2 = confirm("确定删除该评论吗？删除后不能恢复！");
+        if (confirm2 == true) {
+            var deleteId = $(this).attr("item-id");
+            $.ajax({
+                type: "post",//请求类型
+                url: "deleteById",//请求的url
+                data: {deleteId: deleteId},//请求参数
+                dataType: "json",//ajax接口（请求url）返回的数据类型
+                success: function (data) {//data：返回数据（json对象）
+                    if (data > 0) {
+                        alert("删除成功！");
+                        //修改后刷新数据
+                        $("#quanbu").submit();
+                    } else {
+                        alert("删除失败！");
+                    }
+                },
+                error: function (data) {//当访问时候，404，500 等非200的错误状态码
+                    alert("查看商品详情失败！！");
+                }
+            });
+        }
+    });
+    //根据ID查找
+    $(".findById").click(function () {
+        var id2 = $(this).attr("item-id");
+        $.ajax({
+            type: "post",//请求类型
+            url: "selectById",//请求的url
+            data: {id: id2},//请求参数
+            dataType: "json",//ajax接口（请求url）返回的数据类型,,
+            success: function (data) {//data：返回数据（json对象）
+                $("#good-id").val(data.id);//date返回对象，然后使用date点出对象中的属性，然后赋值给对应的id
+                $("#good-name").val(data.goodName);
+                $("#good-buyName").val(data.buyName);
+                $("#good-saleName").val(data.saleName);
+                if (data.state == 1) {
+                    $(".status").val("待发货");
+                    $("#option1").attr("selected", "selected");
+                }
+                if (data.state == 2) {
+                    $(".status").val("待收货");
+                    $("#option2").attr("selected", "selected");
+                }
+                if (data.state == 3) {
+                    $(".status").val("已签收");
+                    $("#option3").attr("selected", "selected");
+                }
+            },
+            error: function (data) {//当访问时候，404，500 等非200的错误状态码
+            }
+        });
+    });
+    //修改订单状态
+    $("#updateState").click(function () {
+        var id = $("#good-id").val();
+        var state = $("#good-sale").val();
+        $.ajax({
+            type: "post",//请求类型
+            url: "updateState",//请求的url
+            data: {id: id, state: state},//请求参数
+            dataType: "json",//ajax接口（请求url）返回的数据类型,,
+            success: function (data) {//data：返回数据（json对象）
+                if (data > 0) {
+                    alert("修改成功！");
+                    //修改后刷新数据
+                    $("#quanbu").submit();
+                } else {
+                    alert("修改失败！");
+                }
+            },
+            error: function (data) {//当访问时候，404，500 等非200的错误状态码
+            }
+        });
+    });
+</script>
+</body>
+</html>

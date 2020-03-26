@@ -1,0 +1,669 @@
+<html class="no-js" xmlns:fm="http://www.w3.org/1999/html">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>商品列表</title>
+    <meta name="description" content="这是一个 index 页面">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="stylesheet" href="assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/app.js"></script>
+    <style>
+        td {
+            text-align: center
+        }
+
+        th {
+            text-align: center
+        }
+    </style>
+</head>
+<body>
+<!--[if lte IE 9]><p class="browsehappy">升级你的浏览器吧！ <a href="http://se.360.cn/" target="_blank">升级浏览器</a>以获得更好的体验！</p>
+<![endif]-->
+<header class="am-topbar admin-header">
+    <div class="am-topbar-brand"><img src="assets/i/logo.png"></div>
+
+</header>
+<div class="am-cf admin-main">
+    <div class="nav-navicon admin-main admin-sidebar">
+        <!--获取session的值-->
+        <div th:text="'欢迎管理员'+${session.managerList.getUsername()}+'登录'" class="sideMenu am-icon-dashboard"
+             style="color:#aeb2b7; margin: 10px 0 0 0;">
+            <!--<p th:text="${managerinfo.username}"></p>--></div>
+        <div class="sideMenu">
+            <h3 class="am-icon-flag"><em></em> <a href="#">商品管理</a></h3>
+            <ul>
+                <li><a th:href="@{/findGoods}">商品列表</a></li>
+                <li><a th:href="@{/findGoodsInfoAll}">审核商品</a></li>
+            </ul>
+            <h3 class="am-icon-cart-plus"><em></em> <a href="#"> 订单管理</a></h3>
+            <ul>
+                <li><a th:href="@{/goToIndentList}">订单列表</a></li>
+            </ul>
+            <h3 class="am-icon-users"><em></em> <a href="#">用户管理</a></h3>
+            <ul>
+                <li><a th:href="@{/UserList}">用户列表</a></li>
+            </ul>
+            <h3 class="am-icon-volume-up"><em></em><a href="#">用户评论信息管理</a></h3>
+            <ul>
+                <li><a th:href="@{/gotoPurchaseInformation}">求购信息</a></li>
+                <li><a th:href="@{/findGoodsMessageList}">用户评论列表</a></li>
+            </ul>
+            <h3 class="am-icon-gears"><em></em> <a href="#">系统设置</a></h3>
+            <ul>
+                <li><a th:href="@{/findManagerinfoId(id=${session.managerList.getId()})}">个人信息</a></li>
+                <li><a th:href="@{/XGMM}">修改密码</a></li>
+            </ul>
+        </div>
+        <!-- sideMenu End -->
+
+        <script type="text/javascript">
+            jQuery(".sideMenu").slide({
+                titCell: "h3", //鼠标触发对象
+                targetCell: "ul", //与titCell一一对应，第n个titCell控制第n个targetCell的显示隐藏
+                effect: "slideDown", //targetCell下拉效果
+                delayTime: 300, //效果时间
+                triggerTime: 150, //鼠标延迟触发时间（默认150）
+                defaultPlay: true,//默认是否执行效果（默认true）
+                returnDefault: true //鼠标从.sideMen移走后返回默认状态（默认false）
+            });
+        </script>
+    </div>
+    <div class=" admin-content">
+        <div class="daohang">
+            <ul>
+                <li>
+                    <a href="index.html" type="button" class="am-btn am-btn-default am-radius am-btn-xs"
+                       th:href="@{/SY}">
+                        首页
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="am-popup am-popup-inner" id="my-popup" style="width: 900px;">
+            <div class="am-popup-hd">
+                <h4 class="am-popup-title">查看商品信息</h4>
+        <span data-am-modal-close
+              class="am-close">&times;</span></div>
+            <div class="am-popup-bd">
+                <form class="am-form tjlanmu" method="post">
+                    <input type="hidden" class="id"/>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品名称：</div>
+                        <div class="you">
+                            <input type="text" name="name" readonly class="goodName am-input-sm" id="doc-ipt-email-1"
+                                   placeholder="请输入商品名称">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品价格：</div>
+                        <div class="you">
+                            <input type="text" readonly name="price" class="am-input-sm goodPrice"
+                                   placeholder="请输入商品价格">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">创建时间：</div>
+                        <div class="you">
+                            <input type="text" readonly name="create" class="am-input-sm goodCreate"
+                                   placeholder="请输入创建时间">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品类别：</div>
+                        <div class="you">
+                            <input type="text" readonly name="type" class="goodType">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品数量：</div>
+                        <div class="you" style="height: 45px;">
+                            <input type="number" readonly name="count" class="goodNum">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">状态：</div>
+                        <div class="you" style="margin-top: 3px;">
+                            <input type="text" readonly name="display" class="goodDisplay">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品详细信息：</div>
+                        <div class="you">
+                            <textarea readonly class="goodMessage" rows="2" name="remark"></textarea>
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">交易方式：</div>
+                        <div class="you">
+                            <input type="text" readonly class="goodWay" name="Way">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">浏览次数：</div>
+                        <div class="you">
+                            <input type="number" readonly class="goodSale" name="view">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">发布商品用户：</div>
+                        <div class="you">
+                            <input type="text" class="userName" readonly name="userName">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品图片：</div>
+                        <div class="you" style="height: 45px;">
+                            <img class="image pimg" th:width="50px" th:height="50px" border="1"/>
+                            <img class="image1 pimg" th:width="50px" th:height="50px" border="1"/>
+                            <img class="image2 pimg" th:width="50px" th:height="50px" border="1"/>
+                            <img class="image3 pimg" th:width="50px" th:height="50px" border="1"/>
+                        </div>
+                        <div class="outerdiv"
+                             style="position:fixed;top:0;left:0;background:rgba(0,0,0,0.7);z-index:2;width:100%;height:100%;display:none;">
+                            <div class="innerdiv" style="margin-top: 200px;margin-left: 250px">
+                                <img class="bigimg" style="" src=""/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="am-popup am-popup-inner" id="my-popups" style="width: 900px;">
+            <div class="am-popup-hd">
+                <h4 class="am-popup-title">修改商品信息</h4>
+                <span data-am-modal-close class="am-close">&times;</span></div>
+            <div class="am-popup-bd">
+                <form class="am-form tjlanmu" method="post" th:action="@{/updateGood}">
+                    <input type="hidden" name="id" class="id"/>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品名称：</div>
+                        <div class="you">
+                            <input type="text" name="name" readonly class="goodName am-input-sm" id="doc-ipt-email-1"
+                                   placeholder="请输入商品名称">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品价格：</div>
+                        <div class="you">
+                            <input type="text" name="tradingValue" class="am-input-sm goodPrice" readonly
+                                   placeholder="请输入商品价格">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品类别：</div>
+                        <div class="you">
+                            <select readonly
+                                    name="type" id="updType" class="goodType">
+                                <option value="0">选择商品类型</option>
+                                <option value="1" id="type1">闲置数码</option>
+                                <option value="2" id="type2">虚拟物品</option>
+                                <option value="3" id="type3">电器日用</option>
+                                <option value="4" id="type4">图书教材</option>
+                                <option value="5" id="type5">美妆衣物</option>
+                                <option value="6" id="type6">运动棋牌</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品数量：</div>
+                        <div class="you" style="height: 45px;">
+                            <input type="number" readonly name="count" class="goodNum">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">状态：</div>
+                        <div class="you" style="margin-top: 3px;">
+                            <select
+                                    name="display" class="goodState" id="updateState">
+                                <option value="10">选择商品状态</option>
+                                <option id="updateDisplay0" value="0">在售</option>
+                                <option id="updateDisplay1" value="1">下架</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品详细信息：</div>
+                        <div class="you">
+                            <textarea class="goodMessage" readonly rows="2" name="remark"></textarea>
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">交易方式：</div>
+                        <div class="you">
+                            <input type="hidden" class="transaction" name="transaction">
+                            <input type="text" readonly class="goodWay">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">浏览次数：</div>
+                        <div class="you">
+                            <input type="number" class="goodSale" name="view" readonly>
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">发布商品用户：</div>
+                        <div class="you">
+                            <input type="text" class="userName" readonly name="userName">
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="zuo">商品图片：</div>
+                        <div class="you" style="height: 45px;">
+                            <img class="image pimg" th:width="50px" th:height="50px" border="1"/>
+                            <img class="image1 pimg" th:width="50px" th:height="50px" border="1"/>
+                            <img class="image2 pimg" th:width="50px" th:height="50px" border="1"/>
+                            <img class="image3 pimg" th:width="50px" th:height="50px" border="1"/>
+                        </div>
+                        <div class="outerdiv"
+                             style="position:fixed;top:0;left:0;background:rgba(0,0,0,0.7);z-index:2;width:100%;height:100%;display:none;">
+                            <div class="innerdiv" style="margin-top: 200px;margin-left: 250px">
+                                <img class="bigimg" style="" src=""/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="am-form-group am-cf">
+                        <div class="you">
+                            <p>
+                                <button type="submit" class="am-btn am-btn-success am-radius">提交</button>
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="admin-biaogelist">
+            <div class="listbiaoti am-cf">
+                <ul class="am-icon-flag on" style="color: red;">
+                    商品列表
+                </ul>
+                <dl class="am-icon-home" style="float: right;">
+                    当前位置： <a href="index.html">首页 </a>> <a th:href="@{/findGoods}">商品列表</a>
+                </dl>
+                <!--data-am-modal="{target: '#my-popup'}" 弹出层 ID  弹出层 190行 开始  271行结束-->
+
+            </div>
+            <form method="post" th:action="@{/findGoods}">
+                <div class="am-btn-toolbars am-btn-toolbar am-kg am-cf" id="ssk">
+                    <ul>
+                        <!-- <li style="color: #6598a0;font-size: 14px;margin-top: 4px;">商品状态：</li>-->
+                        <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+                        <li>
+                            <div class="am-btn-group am-btn-group-xs">
+                                <select data-am-selected="{btnWidth: 150, btnSize: 'sm', btnStyle: 'default'}"
+                                        name="display">
+                                    <option value="10">选择商品状态</option>
+                                    <option th:selected="${display==0}" value="0">在售</option>
+                                    <option th:selected="${display==1}" value="1">下架</option>
+                                </select>
+                            </div>
+                        </li>
+                        <!-- <li style="color: #6598a0;font-size: 14px;margin-top: 4px;">商品类型：</li>-->
+                        <li>
+                            <div class="am-btn-group am-btn-group-xs">
+                                <select data-am-selected="{btnWidth: 150, btnSize: 'sm', btnStyle: 'default'}"
+                                        name="type" id="type">
+                                    <option value="0">选择商品类型</option>
+                                    <option th:selected="${type==1}" value="1">闲置数码</option>
+                                    <option th:selected="${type==2}" value="2">游戏代练</option>
+                                    <option th:selected="${type==3}" value="3">电器日用</option>
+                                    <option th:selected="${type==4}" value="4">图书教材</option>
+                                    <option th:selected="${type==5}" value="5">美妆衣物</option>
+                                    <option th:selected="${type==6}" value="6">运动棋牌</option>
+                                    <option th:selected="${type==7}" value="7">游戏设备</option>
+                                </select>
+                            </div>
+                        </li>
+                        <li style="color: #23282a;font-size: 13px;margin-top: 4px;">商品名称：</li>
+                        <li>
+
+                            <input type="text" style="width:150px;height: 28px;margin-top: 0px;"
+                                   class="am-form-field am-input-sm am-input-xm" name="name"
+                                   placeholder="商品名称"
+                                   id="name" th:value="${name}"/>
+                        </li>
+                        <li>
+                            <input type="submit" style="width:60px;height: 30px;margin-top: 1px;"
+                                   class="am-btn am-radius am-btn-xs am-btn-success" id="search" value="搜索"/>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+            <form class="am-form am-g">
+                <table width="100%" class="am-table am-table-bordered am-table-radius am-table-striped am-table-hover">
+                    <thead>
+                    <tr class="am-success">
+                        <th class="table-check"><input type="checkbox"/></th>
+                        <th class="table-id am-text-center">ID</th>
+                        <th class="">名称</th>
+                        <th class="table-type">类型</th>
+                        <th class="table-author am-hide-sm-only">价格</th>
+                        <th class="table-title">发布用户</th>
+                        <th class="table-title">创建时间</th>
+                        <th class="table-title">状态</th>
+                        <th width="125px" class="table-set">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="good:${goods}">
+                        <td><input type="checkbox"/></td>
+                        <td class="am-text-center" th:text="${good.id}"></td>
+                        <td th:text="${good.name}"></td>
+                        <td th:text="${good.goodstype.name}"></td>
+                        <td class="am-hide-sm-only" th:text="${good.tradingValue}"></td>
+                        <td th:text="${good.userinfo.userName}"></td>
+                        <td th:text="${#dates.format(good.modify,'yyyy-MM-dd')}"></td>
+                        <!--
+                                                判断数据库的数字是否正确正确显示数字
+                                                <td th:if="${goodsinfo.level==5}">5成新</td>
+                                                <td th:if="${goodsinfo.level==9}">9成新</td>
+                                                <td th:if="${goodsinfo.level==10}">10成新</td>-->
+                        <td th:if="${good.display==0}" style="color:blue;">在售</td>
+                        <td th:if="${good.display==1}" style="color:red;">下架</td>
+                        <td>
+                            <div class="am-btn-toolbar">
+                                <div class="am-btn-group am-btn-group-xs">
+                                    <input type="hidden" th:value="${good.id}"/>
+                                    <a class="am-btn am-btn-default am-btn-xs am-text-success am-round find"
+                                       data-am-modal="{target: '#my-popup'}" title="查看商品信息"><span
+                                            class="am-icon-search"></span></a>
+                                    <input type="hidden" th:value="${good.id}"/>
+                                    <a class="am-btn am-btn-default am-btn-xs am-text-secondary am-round update"
+                                       data-am-modal="{target: '#my-popups'}" title="修改商品信息"><span
+                                            class="am-icon-pencil-square-o"></span></a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="am-btn-group am-btn-group-xs">
+                </div>
+                <div style="float: right">
+                </div>
+                <div class="xian" style="float: right">
+                    <th:if th:if="${pageUtil!=null}">
+                        <div class="page">
+                            共<span th:text="${pageUtil.totalCount}"></span>条记录&nbsp;每页<span
+                                th:text="${pageUtil.pageSize}"></span>条&nbsp;现在<span
+                                th:text="${pageUtil.pageNum}" id="pageNum"></span>/<span
+                                th:text="${pageUtil.totalPageCount}" id="totalPageCount"></span>页
+                            <th:if th:if="${pageUtil.totalCount>pageUtil.pageSize}">
+                                <a id="index"
+                                   th:href="@{/findGoods(pageNum=1,display=${display},type=${type},name=${name})}">首页</a>
+                                <th:if th:if="${pageUtil.pageNum>1}">
+                                    <a th:href="@{/findGoods(pageNum=${pageUtil.pageNum}-1,display=${display},type=${type},name=${name})}">上一页</a>
+                                </th:if>
+                                <th:if th:if="${pageUtil.pageNum<=1}">
+                                    <a th:href="@{/findGoods(pageNum=1,display=${display},type=${type},name=${name})}">上一页</a>
+                                </th:if>
+                                <th:if th:if="${pageUtil.pageNum>=pageUtil.totalPageCount}">
+                                    <a id="bottom"
+                                       th:href="@{/findGoods(pageNum=${pageUtil.totalPageCount},display=${display},type=${type},name=${name})}">下一页</a>
+                                </th:if>
+                                <th:if th:if="${pageUtil.pageNum<pageUtil.totalPageCount}">
+                                    <a id="bottom"
+                                       th:href="@{/findGoods(pageNum=${pageUtil.pageNum}+1,display=${display},type=${type},name=${name})}">下一页</a>
+                                </th:if>
+                                <a id="last"
+                                   th:href="@{/findGoods(pageNum=${pageUtil.totalPageCount},display=${display},type=${type},name=${name})}">尾页</a>
+                            </th:if>
+
+                            <th:if th:if="${pageUtil.totalCount<=pageUtil.pageSize}">
+                                <a href="javascript:void(0)">首页</a>
+                                <a href="javascript:void(0)">上一页</a>
+                                <a href="javascript:void(0)">下一页</a>
+                                <a href="javascript:void(0)">尾页</a>
+                            </th:if>
+                        </div>
+                    </th:if>
+                    <style type="text/css">
+                        .xian .page a {
+                            background-color: #d9d9d9;
+                            padding: 4px 12px;
+                            border-radius: 2px;
+                        }
+
+                        .page a:hover {
+                            background-color: #c7c7c7;
+                        }
+                    </style>
+                </div>
+                <hr/>
+
+            </form>
+            <h1 style="text-align: center" th:text="${str}"></h1>
+            <div class="foods" style="margin-top: 372px;">
+                <ul>
+                    版权所有@2019 北大青鸟鸿鹄狮鹫
+                </ul>
+                <dl>
+                    <a href="" title="返回头部" class="am-icon-btn am-icon-arrow-up"></a>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--[if lt IE 9]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/polyfill/rem.min.js"></script>
+<script src="assets/js/polyfill/respond.min.js"></script>
+<script src="assets/js/amazeui.legacy.js"></script>
+<![endif]-->
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/amazeui.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $(".update").click(function () {
+            var id = $(this).prev("input").val();
+            var json = {id: id};
+            $.ajax({
+                url: "/findGoodById",
+                type: "post",
+                data: json,
+                dataType: "json",
+                success: function (result) {
+                    $(".id").val(result.id);
+                    $(".goodName").val(result.name);
+                    $(".goodCreate").val(result.modify);
+                    $(".goodPrice").val(result.tradingValue);
+                    $(".goodMessage").val(result.remark);
+                    $(".goodSale").val(result.view);//商品销量
+                    $(".goodNum").val(result.count);//商品数量
+                    $(".userName").val(result.userinfo.userName);
+                    $(".transaction").val(result.transaction);
+                    if (result.transaction == 0) {
+                        $(".goodWay").val("微信");
+                    } else if (result.transaction == 1) {
+                        $(".goodWay").val("支付宝");
+                    } else if (result.transaction == 2) {
+                        $(".goodWay").val("面交");
+                    }
+                    $("#updType").val(result.goodstype.id);
+                    $("#updateState").val(result.display);
+                    if (result.image != null) {
+                        $(".image").attr("src", result.image);
+                        $(".image").show();
+                    } else if (result.image == null) {
+                        $(".image").hide();
+                    }
+                    if (result.image1 != null) {
+                        $(".image1").attr("src", result.image1);
+                        $(".image1").show();
+                    } else if (result.image1 == null) {
+                        $(".image1").hide();
+                    }
+                    if (result.image2 != null) {
+                        $(".image2").attr("src", result.image2);
+                        $(".image2").show();
+                    } else if (result.image2 == null) {
+                        $(".image2").hide();
+                    }
+                    if (result.image3 != null) {
+                        $(".image3").attr("src", result.image3);
+                        $(".image3").show();
+                    } else if (result.image3 == null) {
+                        $(".image3").hide();
+                    }
+                },
+                error: function () {
+                    alert("出现异常");
+                }
+            });
+        });
+
+
+        $(".find").click(function () {
+            var id = $(this).prev("input").val();
+            var json = {id: id};
+            $.ajax({
+                url: "/findGoodById",
+                type: "post",
+                data: json,
+                dataType: "json",
+                success: function (result) {
+                    $(".id").val(result.id);
+                    $(".goodName").val(result.name);
+                    $(".goodCreate").val(result.modify);
+                    if (result.display == 0) {
+                        $(".goodDisplay").val("在售");
+                    } else if (result.display == 1) {
+                        $(".goodDisplay").val("下架");
+                    } else if (result.display == 2) {
+                        $(".goodDisplay").val("待审核");
+                    } else if (result.display == 3) {
+                        $(".goodDisplay").val("审核未通过");
+                    }
+                    if (result.type == 1) {
+                        $(".goodType").val("闲置数码");
+                    } else if (result.type == 2) {
+                        $(".goodType").val("游戏代练");
+                    } else if (result.type == 3) {
+                        $(".goodType").val("电器日用");
+                    } else if (result.type == 4) {
+                        $(".goodType").val("图书教材");
+                    } else if (result.type == 5) {
+                        $(".goodType").val("美妆衣物");
+                    } else if (result.type == 6) {
+                        $(".goodType").val("运动棋牌");
+                    } else if (result.type == 7) {
+                        $(".goodType").val("游戏设备");
+                    }
+                    if (result.transaction == 0) {
+                        $(".goodWay").val("微信");
+                    } else if (result.transaction == 1) {
+                        $(".goodWay").val("支付宝");
+                    } else if (result.transaction == 2) {
+                        $(".goodWay").val("面交");
+                    }
+                    $(".goodPrice").val(result.tradingValue);
+                    $(".goodMessage").val(result.remark);
+                    $(".goodSale").val(result.view);//商品销量
+                    $(".goodNum").val(result.count);//商品数量
+                    $(".userName").val(result.userinfo.userName);
+                    if (result.image != null) {
+                        $(".image").attr("src", result.image);
+                        $(".image").show();
+                    } else if (result.image == null) {
+                        $(".image").hide();
+                    }
+                    if (result.image1 != null) {
+                        $(".image1").attr("src", result.image1);
+                        $(".image1").show();
+                    } else if (result.image1 == null) {
+                        $(".image1").hide();
+                    }
+                    if (result.image2 != null) {
+                        $(".image2").attr("src", result.image2);
+                        $(".image2").show();
+                    } else if (result.image2 == null) {
+                        $(".image2").hide();
+                    }
+                    if (result.image3 != null) {
+                        $(".image3").attr("src", result.image3);
+                        $(".image3").show();
+                    } else if (result.image3 == null) {
+                        $(".image3").hide();
+                    }
+                },
+
+                error: function () {
+                    alert("出现异常");
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(function () {
+        $(".pimg").click(function () {
+            var _this = $(this);//将当前的pimg元素作为_this传入函数
+            imgShow(".outerdiv", ".innerdiv", ".bigimg", _this);
+        });
+
+        $("body").click(function () {
+            $(".outerdiv").hide();
+        });
+    });
+
+    function imgShow(outerdiv, innerdiv, bigimg, _this) {
+        var src = _this.attr("src");//获取当前点击的pimg元素中的src属性
+        $(bigimg).attr("src", src);//设置#bigimg元素的src属性
+
+        /*获取当前点击图片的真实大小，并显示弹出层及大图*/
+        $("<img/>").attr("src", src).load(function () {
+            var windowW = $(window).width();//获取当前窗口宽度
+            var windowH = $(window).height();//获取当前窗口高度
+            var realWidth = this.width;//获取图片真实宽度
+            var realHeight = this.height;//获取图片真实高度
+            var imgWidth, imgHeight;
+            var scale = 0.5;//缩放尺寸，当图片真实宽度和高度大于窗口宽度和高度时进行缩放
+
+            if (realHeight > windowH * scale) {//判断图片高度
+                imgHeight = windowH * scale;//如大于窗口高度，图片高度进行缩放
+                imgWidth = imgHeight / realHeight * realWidth;//等比例缩放宽度
+                if (imgWidth > windowW * scale) {//如宽度扔大于窗口宽度
+                    imgWidth = windowW * scale;//再对宽度进行缩放
+                }
+            } else if (realWidth > windowW * scale) {//如图片高度合适，判断图片宽度
+                imgWidth = windowW * scale;//如大于窗口宽度，图片宽度进行缩放
+                imgHeight = imgWidth / realWidth * realHeight;//等比例缩放高度
+            } else {//如果图片真实高度和宽度都符合要求，高宽不变
+                imgWidth = realWidth;
+                imgHeight = realHeight;
+            }
+            $(bigimg).css("width", imgWidth);//以最终的宽度对图片缩放
+
+            var w = (windowW - imgWidth) / 2;//计算图片与窗口左边距
+            var h = (windowH - imgHeight) / 2;//计算图片与窗口上边距
+            $(innerdiv).css({"top": h, "left": w});//设置#innerdiv的top和left属性
+            $(outerdiv).fadeIn("fast");//淡入显示#outerdiv及
+        });
+
+        $(outerdiv).click(function () {//再次点击淡出消失弹出层
+            $(this).fadeOut("fast");
+        });
+    }
+</script>
+</body>
+</html>

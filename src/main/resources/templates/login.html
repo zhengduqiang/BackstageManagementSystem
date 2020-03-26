@@ -1,0 +1,105 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>系统登录</title>
+    <link href="css/login.css" rel="stylesheet" rev="stylesheet" type="text/css" media="all"/>
+    <link href="css/demo.css" rel="stylesheet" rev="stylesheet" type="text/css" media="all"/>
+    <script type="text/javascript" src="js/jquery1.42.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#dl").click(function () {
+                var username = $("#username").val();
+                var password = $("#password").val();
+                var yzm1 = $("#yzm1").html();
+                var yzm = $("#yzm").val();
+                if (username == "") {
+                    $("#tsxx").text("请输入账号！");
+                    return false;
+                } else if (password == "") {
+                    $("#tsxx").text("请输入密码！");
+                    return false;
+                } else if (password.length < 6) {
+                    $("#tsxx").text("密码不能小于6位数！");
+                    return false;
+                } else if (yzm == "") {
+                    $("#tsxx").text("请输入验证码！");
+                    return false;
+                } else if (yzm != yzm1) {
+                    $("#tsxx").text("验证码错误！");
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="header">
+    <h1 class="headerLogo"><a title="后台管理系统" target="_blank" href="http://www.bdqnjx.com/"><img alt="logo"
+                                                                                                src="images/logo.gif"></a>
+    </h1>
+    <div class="headerNav">
+        <h2 target="_blank" href="http://sc.chinaz.com/">青鸟二手鱼后台管理系统</h2>
+    </div>
+</div>
+<div class="header1">
+    <h1 class="headerLogo"><a title="后台管理系统" target="_blank"><img alt="logo" src="themes/login_left.jpg"></a></h1>
+</div>
+<div class="banner">
+    <div class="login-aside">
+        <div id="o-box-up"></div>
+        <div id="o-box-down" style="table-layout:fixed;">
+            <strong> <div class="error-box Validform_checktip Validform_wrong" id="tsxx" th:text="${dlsb}"
+                          style="font-family: FangSong;font-size: 16px;color: red;"></div></strong>
+            <form method="post" th:action="@{/findLogin}">
+                <div class="fm-item">
+                    <label for="logonId" class="form-label" style="font-size: 15px;">二手鱼管理员账号</label>
+                    <input type="text" placeholder="输入账号" maxlength="100" id="username" name="username" class="i-text"
+                           ajaxurl="demo/valid.jsp" datatype="s6-18" errormsg="用户名至少6个字符,最多18个字符！">
+                    <div class="ui-form-explain"></div>
+                </div>
+
+                <div class="fm-item">
+                    <label for="logonId" class="form-label">登录密码</label>
+                    <input type="password" placeholder="请输入密码" maxlength="100" id="password" name="Password"
+                           class="i-text" datatype="*6-16" nullmsg="请设置密码！" errormsg="密码范围在6~16位之间！">
+                    <div class="ui-form-explain"></div>
+                </div>
+
+                <div class="fm-item pos-r">
+                    <label for="logonId" class="form-label">验证码</label>
+                    <input type="text" placeholder="输入验证码" maxlength="100" id="yzm" class="i-text yzm"
+                           nullmsg="请输入验证码"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a th:href="@{/index}" th:text="${yzm}" name="yzm1" id="yzm1"
+                       style="font-family:FZYaoti ;width: 80px; height: 32px;text-align: center;font-size: 22px;color: #2f34dd">
+                    </a>
+                    <div class="ui-form-ex"></div>
+                </div>
+                <div class="fm-item">
+                    <strong><span style="font-family: FangSong;font-size: 16px;color: red;"
+                                  class="yz" th:text="${xgcg}"></span></strong>
+                    <input type="submit" value="" tabindex="4" id="dl" class="btn-login">
+                    <div class="ui-form-explain"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="bd">
+        <ul>
+            <li style="background:url(themes/theme-pic2.jpg) #CCE1F3 center 0 no-repeat; width: 500px;height: 1000px;"></li>
+            <li style="background:url(themes/theme-pic2.jpg) #BCE0FF center 0 no-repeat;"></li>
+        </ul>
+    </div>
+    <div class="hd">
+        <ul></ul>
+    </div>
+</div>
+<div class="footer">
+    <p>Copyright &copy; 2014.Company name All rights reserved.</p>
+</div>
+</body>
+</html>

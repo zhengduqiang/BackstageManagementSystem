@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhsj.BackstageManagementSystem.dao.GoodsinfoMapper">
+    <!--审核商品相关的sql语句-->
+    <!--配置三表联查的关系映射-->
+    <resultMap id="goods1" type="com.hhsj.BackstageManagementSystem.pojo.GoodsInfoCutom">
+        <id column="Id" property="id"/>
+        <result column="Name" property="name"/>
+        <result column="Modify" property="modify"/>
+        <result column="Price" property="price"/>
+        <association property="goodstype" javaType="com.hhsj.BackstageManagementSystem.pojo.Goodstype">
+            <id column="t_id" property="id"/>
+            <result column="typeName" property="name"/>
+        </association>
+        <association property="userinfo" javaType="com.hhsj.BackstageManagementSystem.pojo.Userinfo">
+            <id column="u_id" property="id"/>
+            <result column="userName" property="userName"/>
+        </association>
+    </resultMap>
+
+    <!--查询所有商品相关的全部信息-->
+    <select id="findGoodsInfoAll" resultMap="goods1">
+        SELECT i.*,t.`Name` AS typeName,t.`Id` AS t_id,u.`Id` u_id,u.`UserName` userName FROM `goodsinfo` i,`goodstype`
+        t,`userinfo` u
+        WHERE i.`Type` = t.`Id` AND i.`Uid` = u.id AND i.Display=2
+    </select>
+
+    <!--按条件查询商品相关的信息-->
+    <select id="findGoodsInfo" resultMap="goods1"
+            parameterType="com.hhsj.BackstageManagementSystem.pojo.GoodsInfoCutom">
+        SELECT i.*,t.`Name` AS typeName,t.`Id` AS t_id,u.`Id` u_id,u.`UserName` userName FROM `goodsinfo` i,`goodstype`
+        t,`userinfo` u
+        WHERE i.`Type` = t.`Id` AND i.`Uid` = u.id AND i.Display=2
+        <if test="name != '' and name != null">
+            AND i.name LIKE CONCAT ('%',#{name},'%')
+        </if>
+        <if test="type != 0 and type!=null ">
+            AND `type` = #{type}
+        </if>
+    </select>
+
+    <!--按id查询商品信息-->
+    <select id="findGoodsInfoId"
+            parameterType="com.hhsj.BackstageManagementSystem.pojo.GoodsInfoCutom" resultMap="goods1">
+        SELECT i.*,t.`Name` AS typeName,t.`Id` AS t_id,u.`Id` u_id,u.`UserName` userName FROM `goodsinfo` i,`goodstype`
+        t,`userinfo` u
+        WHERE i.`Type` = t.`Id` AND i.`Uid` = u.id AND i.Display=2 AND  i.Id =#{id}
+    </select>
+
+    <!--修改商品状态-->
+    <update id="updateDisplay" parameterType="com.hhsj.BackstageManagementSystem.pojo.Goodsinfo">
+         UPDATE `goodsinfo` SET Display=#{display} WHERE id=#{id};
+    </update>
+
+
+    <!--订单列表相关的sql语句-->
+    <!--按条件查询订单列表-->
+    <select id="findIndentList" parameterType="com.hhsj.BackstageManagementSystem.pojo.Goodsinfo"
+            resultType="com.hhsj.BackstageManagementSystem.pojo.Goodsinfo">
+        select * from goodsinfo WHERE 1=1
+        <if test="id != null and id!='' ">
+            AND id = #{id}
+        </if>
+
+        <if test="name != '' and name != null">
+            AND name LIKE CONCAT ('%',#{name},'%')
+        </if>
+        <if test="display != null and display!=-1 ">
+            AND display = #{display}
+        </if>
+        and display > 3
+    </select>
+    <!--查询所有订单-->
+    <select id="findIndentAll" resultType="com.hhsj.BackstageManagementSystem.pojo.Goodsinfo">
+        select * from goodsinfo where display >3
+    </select>
+    <!--按id查询-->
+    <select id="findById" parameterType="int" resultType="com.hhsj.BackstageManagementSystem.pojo.Goodsinfo">
+        SELECT  * FROM goodsinfo WHERE Id=#{VALUE}
+    </select>
+    <!--修改订单状态-->
+    <update id="UpdateGoodSale" parameterType="com.hhsj.BackstageManagementSystem.pojo.Goodsinfo">
+        UPDATE `goodsinfo` SET Display=#{display} WHERE id=#{id}
+    </update>
+
+    <!--以下是商品列表相关的代码-->
+    <!--查询所有商品列表-->
+    <select id="findGoods" resultMap="goods" parameterType="map">
+        SELECT i.*,t.`Name` AS typeName,t.`Id` AS t_id,u.`Id` u_id,u.`UserName` userName FROM `goodsinfo` i,`goodstype`
+        t,`userinfo` u
+        WHERE i.`Type` = t.`Id` AND i.`Uid` = u.id AND i.Display NOT IN (2,3)
+        <if test="display != null and display !=10">
+            AND i.Display = #{display}
+        </if>
+        <if test="type!=null and type!=0">
+            AND i.Type = #{type}
+        </if>
+        <if test="name != null and name!=''">
+            AND i.Name LIKE CONCAT('%',#{name},'%')
+        </if>
+        LIMIT #{pageIndex},#{pageSize}
+    </select>
+    <resultMap id="goods" type="com.hhsj.BackstageManagementSystem.pojo.GoodsInfoCutom">
+        <id column="Id" property="id"/>
+        <result column="Name" property="name"/>
+        <association property="goodstype" javaType="com.hhsj.BackstageManagementSystem.pojo.Goodstype">
+            <id column="t_id" property="id"/>
+            <result column="typeName" property="name"/>
+        </association>
+        <association property="userinfo" javaType="com.hhsj.BackstageManagementSystem.pojo.Userinfo">
+            <id column="u_id" property="id"/>
+            <result column="userName" property="userName"/>
+        </association>
+    </resultMap>
+
+    <!--查询商品总条数-->
+    <select id="findGoodCount" resultType="int" parameterType="map">
+        SELECT COUNT(0) FROM `goodsinfo`
+        <where>
+            Display NOT IN (2,3)
+            <if test="display != null and display !=10">
+                AND Display = #{display}
+            </if>
+            <if test="type!=null and type!=0">
+                AND Type = #{type}
+            </if>
+            <if test="name!=null and name!=''">
+                AND Name LIKE CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <!--查询单个商品信息-->
+    <select id="findGoodById" resultMap="GoodById" parameterType="int">
+        SELECT i.*,t.`Name` AS typeName,t.`Id` AS t_id,u.`Id` u_id,u.`UserName` userName FROM `goodsinfo` i,`goodstype`
+        t,`userinfo` u
+        WHERE i.`Type` = t.`Id` AND i.`Uid` = u.id
+        AND i.`Id` = #{id}
+    </select>
+    <resultMap id="GoodById" type="com.hhsj.BackstageManagementSystem.pojo.GoodsInfoCutom">
+        <id column="Id" property="id"/>
+        <result column="Name" property="name"/>
+        <association property="goodstype" javaType="com.hhsj.BackstageManagementSystem.pojo.Goodstype">
+            <id column="t_id" property="id"/>
+            <result column="typeName" property="name"/>
+        </association>
+        <association property="userinfo" javaType="com.hhsj.BackstageManagementSystem.pojo.Userinfo">
+            <id column="u_id" property="id"/>
+            <result column="userName" property="userName"/>
+        </association>
+    </resultMap>
+
+    <update id="updateGood" parameterType="com.hhsj.BackstageManagementSystem.pojo.GoodsInfoCutom">
+        UPDATE `goodsinfo` SET`Display` = #{display},`view` = #{view}
+         WHERE `Id` = #{id}
+    </update>
+
+    <delete id="delGood" parameterType="int">
+        DELETE FROM `goodsinfo`
+        WHERE `Id` = #{id}
+    </delete>
+</mapper>

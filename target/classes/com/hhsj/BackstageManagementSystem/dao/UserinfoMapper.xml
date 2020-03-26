@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhsj.BackstageManagementSystem.dao.UserinfoMapper">
+    <select id="findUserList" parameterType="com.hhsj.BackstageManagementSystem.pojo.Userinfo" resultType="com.hhsj.BackstageManagementSystem.pojo.Userinfo">
+        select * from userinfo
+        <where>
+            <if test=" phone != '' and phone != null ">
+                and phone like concat('%',#{phone},'%')
+            </if>
+            <if test=" userName != '' and userName != null ">
+                and userName like concat('%',#{userName},'%')
+            </if>
+            <if test=" qq != '' and qq != null ">
+                and QQ like concat('%',#{qq},'%')
+            </if>
+            <if test="status != null">
+                and status=#{status}
+            </if>
+
+
+        </where>
+    </select>
+    <select id="findUser" parameterType="int" resultMap="map">
+        SELECT * from userinfo where id=#{id}
+    </select>
+    <resultMap id="map" type="com.hhsj.BackstageManagementSystem.pojo.Userinfo">
+        <id property="id" column="id"/>
+        <result property="userName" column="UserName"/>
+        <result property="phone" column="Phone"/>
+        <result property="realName" column="RealName"/>
+        <result property="class1" column="Class1"/>
+        <result property="sno" column="Sno"/>
+        <result property="dormitory" column="Dormitory"/>
+        <result property="gender" column="Gender"/>
+        <result property="creatTime" column="CreatTime"/>
+        <result property="avatar" column="Avatar"/>
+        <result property="qq" column="QQ"/>
+        <result property="status" column="status"/>
+    </resultMap>
+    <update id="updateUserinfo" parameterType="com.hhsj.BackstageManagementSystem.pojo.Userinfo">
+      UPDATE userinfo set Class1=#{class1},Dormitory=#{dormitory},
+      Gender=#{gender},status=#{status},DateTime=#{dateTime} where id=#{id}
+    </update>
+
+    <select id="findUserIdByName" resultType="int" parameterType="String">
+        SELECT `Id` FROM `userinfo` WHERE `UserName` = #{userName}
+    </select>
+</mapper>

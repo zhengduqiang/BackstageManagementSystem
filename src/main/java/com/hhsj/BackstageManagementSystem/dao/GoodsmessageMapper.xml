@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhsj.BackstageManagementSystem.dao.GoodsmessageMapper">
+    <!--查询全部用户评论信息-->
+    <select id="findGoodsMessageList" resultMap="goodsMessage">
+        SELECT m.*,i.*,u.*,i.id AS i_id,u.id AS u_id FROM goodsmessage m,goodsinfo i,userinfo u WHERE m.gid=i.id AND m.Uid=u.id  ORDER BY m.`modify` DESC
+    </select>
+    <!--按条件查询用户评论信息-->
+    <select id="findGoodsMessage" resultMap="goodsMessage"
+            parameterType="com.hhsj.BackstageManagementSystem.pojo.GoodsmessageCutom">
+        SELECT m.*,i.*,u.*,i.id AS i_id,u.id AS u_id FROM goodsmessage m,goodsinfo i,userinfo u WHERE m.gid=i.id AND
+        m.Uid=u.id
+        <if test="content != '' and content != null ">
+            AND Content LIKE CONCAT ('%',#{content},'%')
+        </if>
+        <if test="name != '' and name != null">
+            AND i.name LIKE CONCAT ('%',#{name},'%')
+        </if>
+        <if test="type != 0 and type!=null ">
+            AND i.type=#{type}
+        </if>
+        ORDER BY m.`modify` DESC
+    </select>
+
+    <delete id="deleteGoodsMessageId" parameterType="int">
+        DELETE  FROM goodsmessage WHERE id=#{id}
+    </delete>
+
+    <!--配置三表联查的关系映射-->
+    <resultMap id="goodsMessage" type="com.hhsj.BackstageManagementSystem.pojo.GoodsmessageCutom">
+        <id column="Id" property="id"/>
+        <association property="goodsinfo" javaType="com.hhsj.BackstageManagementSystem.pojo.Goodsinfo">
+            <id column="i_id" property="id"/>
+        </association>
+        <association property="userinfo" javaType="com.hhsj.BackstageManagementSystem.pojo.Userinfo">
+            <id column="u_id" property="id"/>
+        </association>
+    </resultMap>
+</mapper>

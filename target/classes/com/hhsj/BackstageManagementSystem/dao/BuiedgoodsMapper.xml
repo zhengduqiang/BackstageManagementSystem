@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhsj.BackstageManagementSystem.dao.BuiedgoodsMapper">
+
+    <!--配置三表联查的关系映射-->
+    <!--<resultMap id="bgc" type="com.hhsj.BackstageManagementSystem.pojo.BuiedgoodsCustom">-->
+        <!--<id property="id" column="id"/>-->
+        <!--<association property="goodsInfo" javaType="com.hhsj.BackstageManagementSystem.pojo.Goodsinfo" column="Id" select="selectGoodById"/>-->
+        <!--<association property="uUser" javaType="com.hhsj.BackstageManagementSystem.pojo.Userinfo" column="Uid" select="selectUserById"/>-->
+        <!--<association property="gUser" javaType="com.hhsj.BackstageManagementSystem.pojo.Userinfo" column="Gid" select="selectUserById"/>-->
+    <!--</resultMap>-->
+
+    <!--<select id="selectUserById" resultType="com.hhsj.BackstageManagementSystem.pojo.Userinfo">-->
+        <!--select * from userinfo where Id=1-->
+    <!--</select>-->
+
+    <!--<select id="selectGoodById" resultType="com.hhsj.BackstageManagementSystem.pojo.Goodsinfo">-->
+        <!--select * from goodsInfo where Id=1-->
+    <!--</select>-->
+
+    <!--<select id="selectAll" resultMap="bgc">-->
+        <!--select * from buiedgoods-->
+    <!--</select>-->
+    <!--按条件查询-->
+    <select id="selectAll" parameterType="com.hhsj.BackstageManagementSystem.pojo.BuiedgoodsCustom" resultType="com.hhsj.BackstageManagementSystem.pojo.BuiedgoodsCustom">
+        SELECT b.`Id`,g.`Name` AS goodName,g.`Type` AS goodType,g.`tradingValue` AS price,u1.UserName AS buyName,u2.UserName AS saleName,b.`Modify`,g.`Transaction` AS `transaction`,b.`State`
+        FROM  `buiedgoods` AS b,`userinfo` AS u1,`userinfo` AS u2,`goodsinfo` AS g
+        WHERE b.`Uid`=u1.`Id`
+        AND b.`Gid`=g.`Id`
+        AND g.`Uid`=u2.Id
+        <if test="id !=null and id!=0 ">
+            And b.Id=#{id}
+        </if>
+        <if test="goodName !=null and goodName!='' ">
+            And g.Name LIKE CONCAT ('%',#{goodName},'%')
+        </if>
+        <if test="buyName !=null and buyName!='' ">
+            And u1.UserName LIKE CONCAT ('%',#{buyName},'%')
+        </if>
+        <if test="saleName !=null and saleName!='' ">
+            And u2.UserName LIKE CONCAT ('%',#{saleName},'%')
+        </if>
+        <if test="state !=-1 and state!=0 and state!=null ">
+            And b.State=#{state}
+        </if>
+        <if test="goodType !=0 and goodType!=-1 and goodType!=null ">
+            And g.Type=#{goodType}
+        </if>
+    </select>
+    <!--按Id删除-->
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM `buiedgoods` WHERE Id=#{value}
+    </delete>
+    <!--根据ID查询-->
+    <select id="selectById" parameterType="int" resultType="com.hhsj.BackstageManagementSystem.pojo.BuiedgoodsCustom">
+        SELECT b.`Id`,g.`Name` AS goodName,g.`Type` AS goodType,g.`tradingValue` AS price,u1.UserName AS buyName,u2.UserName AS saleName,b.`Modify`,g.`Transaction` AS `transaction`,b.`State`
+        FROM  `buiedgoods` AS b,`userinfo` AS u1,`userinfo` AS u2,`goodsinfo` AS g
+        WHERE b.`Uid`=u1.`Id`
+        AND b.`Gid`=g.`Id`
+        AND g.`Uid`=u2.Id
+        AND b.Id=#{value}
+    </select>
+    <!--根据ID修改订单状态-->
+    <update id="updateState" parameterType="map">
+        UPDATE `buiedgoods` SET  `buiedgoods`.`State` =#{state} WHERE Id =#{id}
+    </update>
+</mapper>
